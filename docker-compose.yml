@@ -1,0 +1,25 @@
+version: "3.3"
+services:
+  consul:
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+      CONSUL_LOCAL_CONFIG: >
+        {
+          "bind_addr": "eth0",
+          "client_addr": "0.0.0.0",
+          "enable_script_checks": true,
+          "service": {
+            "checks": [
+              {
+                "interval": "10s",
+                "tcp": "localhost:8080"
+              }
+            ],
+            "name": "web",
+            "port": 8080
+          },
+          "ui": true
+        }
+    image: consul
+    ports:
+    - "8500:8500"
