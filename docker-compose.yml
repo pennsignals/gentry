@@ -1,6 +1,8 @@
 version: "3.3"
 services:
   consul:
+    depends_on:
+    - gentry
     environment:
       CONSUL_BIND_INTERFACE: eth0
       CONSUL_LOCAL_CONFIG: >
@@ -18,8 +20,23 @@ services:
             "name": "web",
             "port": 8080
           },
-          "ui": true
+          "ui": true,
+          "watches": [
+            {
+              "handler": "/go/gentry",
+              "type": "checks"
+            }
+          ]
         }
     image: consul
     ports:
-    - "8500:8500"
+    - 8500:8500
+    volumes:
+    - shared:/go
+  gentry:
+    build: .
+    command: go build -v
+    volumes:
+    - shared:/go/bin
+volumes:
+  shared:
