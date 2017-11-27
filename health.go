@@ -13,22 +13,22 @@ func (s *State) UnmarshalJSON(data []byte) error {
 	}
 	switch state {
 	case "critical":
-		*s = Critical
+		*s = StateCritical
 	case "passing":
-		*s = Passing
+		*s = StatePassing
 	case "warning":
-		*s = Warning
+		*s = StateWarning
 	default:
-		*s = Any
+		*s = StateAny
 	}
 	return nil
 }
 
 const (
-	Any State = iota
-	Critical
-	Passing
-	Warning
+	StateAny State = iota
+	StateCritical
+	StatePassing
+	StateWarning
 )
 
 type Check struct {
