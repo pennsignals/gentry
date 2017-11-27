@@ -1,4 +1,4 @@
-package gentry
+package main
 
 type Attachment struct {
 	AuthorIcon string `json:"author_icon"`

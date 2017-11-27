@@ -1,4 +1,4 @@
-package gentry
+package main
 
 import (
 	"encoding/json"
