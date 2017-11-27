@@ -1,4 +1,4 @@
-package gentry
+package main
 
 import (
 	"encoding/json"
@@ -29,7 +29,7 @@ func TestTypeStateDecode(t *testing.T) {
 	if err := json.Unmarshal(data, &checks); err != nil {
 		t.Error(err)
 	}
-	for i, expected := range []State{Any, Critical, Passing, Warning} {
+	for i, expected := range []State{StateAny, StateCritical, StatePassing, StateWarning} {
 		actual := checks[i].Status
 		if expected != actual {
 			t.Errorf("main: expected type %d, got %d instead", expected, actual)
