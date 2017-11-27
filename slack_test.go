@@ -38,10 +38,17 @@ func TestTypeAttachmentDecode(t *testing.T) {
 	if err := json.Unmarshal(data, &attachments); err != nil {
 		t.Error(err)
 	}
-	var actual, expected string
-	actual = attachments[0].Color.String()
-	expected = ColorDanger.String()
+	actual, expected := attachments[0].Color.String(), ColorDanger.String()
 	if expected != actual {
 		t.Errorf("main: expected %s, got %s", expected, actual)
+	}
+}
+
+func TestMessageAttachmentsAdd(t *testing.T) {
+	var message PostMessage
+	message.Attachments.Add(new(Attachment))
+	actual, expected := len(message.Attachments), 1
+	if expected != actual {
+		t.Errorf("main: expected %d, got %d", expected, actual)
 	}
 }
