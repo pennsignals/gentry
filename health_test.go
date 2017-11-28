@@ -24,3 +24,12 @@ func TestTypeStateDecode(t *testing.T) {
 		}
 	}
 }
+
+func TestTypeStateDecodeMalformed(t *testing.T) {
+	// State expects type `string` not type `number`.
+	data := []byte(`[{"Status": 0}]`)
+	var checks Checks
+	if err := json.Unmarshal(data, &checks); err == nil {
+		t.Error("main: expected type string, got number instead")
+	}
+}
