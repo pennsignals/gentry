@@ -20,8 +20,8 @@ type Attachment struct {
 
 type Attachments []*Attachment
 
-func (a *Attachments) Add(attachment *Attachment) {
-	*a = append(*a, attachment)
+func (a *Attachments) Add(attachments ...*Attachment) {
+	*a = append(*a, attachments...)
 }
 
 type Color string
