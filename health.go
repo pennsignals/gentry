@@ -1,34 +1,22 @@
 package main
 
-import (
-	"encoding/json"
-)
+type State string
 
-type State int
-
-func (s *State) UnmarshalJSON(data []byte) error {
-	var state string
-	if err := json.Unmarshal(data, &state); err != nil {
-		return err
-	}
-	switch state {
-	case "critical":
-		*s = StateCritical
-	case "passing":
-		*s = StatePassing
-	case "warning":
-		*s = StateWarning
-	default:
-		*s = StateAny
-	}
+func (s *State) Set(state string) error {
+	*s = State(state)
 	return nil
 }
 
+// String returns the literal text of the state.
+func (s State) String() string {
+	return string(s)
+}
+
 const (
-	StateAny State = iota
-	StateCritical
-	StatePassing
-	StateWarning
+	StateAny      State = "any"
+	StateCritical State = "critical"
+	StatePassing  State = "passing"
+	StateWarning  State = "warning"
 )
 
 type Check struct {
