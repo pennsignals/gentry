@@ -20,7 +20,7 @@ func TestTypeStateDecode(t *testing.T) {
 	for i, expected := range []State{StateAny, StateCritical, StatePassing, StateWarning} {
 		actual = checks[i].Status
 		if expected != actual {
-			t.Errorf("main: expected type %d, got %d instead", expected, actual)
+			t.Errorf("main: expected %q, got %q instead", expected, actual)
 		}
 	}
 }
@@ -31,5 +31,16 @@ func TestTypeStateDecodeMalformed(t *testing.T) {
 	var checks Checks
 	if err := json.Unmarshal(data, &checks); err == nil {
 		t.Error("main: expected type string, got number instead")
+	}
+}
+
+func TestTypeStateFlagParsing(t *testing.T) {
+	var state State
+	actual, expected := "any", StateAny.String()
+	if err := state.Set(actual); err != nil {
+		t.Error(err)
+	}
+	if expected != actual {
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 }
