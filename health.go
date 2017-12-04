@@ -2,16 +2,6 @@ package main
 
 type State string
 
-func (s *State) Set(state string) error {
-	*s = State(state)
-	return nil
-}
-
-// String returns the literal text of the state.
-func (s State) String() string {
-	return string(s)
-}
-
 const (
 	StateAny      State = "any"
 	StateCritical State = "critical"

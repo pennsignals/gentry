@@ -33,14 +33,3 @@ func TestTypeStateDecodeMalformed(t *testing.T) {
 		t.Error("main: expected type string, got number instead")
 	}
 }
-
-func TestTypeStateFlagParsing(t *testing.T) {
-	var state State
-	actual, expected := "any", StateAny.String()
-	if err := state.Set(actual); err != nil {
-		t.Error(err)
-	}
-	if expected != actual {
-		t.Errorf("main: expected %q, got %q instead", expected, actual)
-	}
-}
