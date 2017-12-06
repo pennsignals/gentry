@@ -3,7 +3,6 @@ package main
 type State string
 
 const (
-	StateAny      State = "any"
 	StateCritical State = "critical"
 	StatePassing  State = "passing"
 	StateWarning  State = "warning"
