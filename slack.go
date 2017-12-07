@@ -28,8 +28,8 @@ type Color string
 
 const (
 	ColorDanger  Color = "danger"
-	ColorGood          = "good"
-	ColorWarning       = "warning"
+	ColorGood    Color = "good"
+	ColorWarning Color = "warning"
 )
 
 // String returns the literal text of the color.
