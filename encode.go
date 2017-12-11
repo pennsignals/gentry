@@ -2,72 +2,67 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
 const DefaultBufferSize int = 4096
 
 type Encoder interface {
-	Encode(check *Check)
-	Product() Product
+	Encode(checks Checks)
 }
 
-type Product interface{}
-
 type BufferedReader struct {
-	bytes   []byte
+	buffer  []byte
 	encoder Encoder
 }
 
 func NewBufferedReader(reader io.Reader, encoder Encoder) (*BufferedReader, error) {
-	bytes := make([]byte, DefaultBufferSize)
-	n, err := reader.Read(bytes)
+	buffer := make([]byte, DefaultBufferSize)
+	n, err := reader.Read(buffer)
 	if err != nil {
 		return nil, err
 	}
-	return &BufferedReader{bytes[:n], encoder}, nil
+	return &BufferedReader{buffer[:n], encoder}, nil
 }
 
 func (r *BufferedReader) Parse() error {
 	var checks Checks
-	if err := json.Unmarshal(r.bytes, &checks); err != nil {
+	if err := json.Unmarshal(r.buffer, &checks); err != nil {
 		return err
 	}
-	for _, check := range checks {
-		r.encoder.Encode(check)
-	}
+	r.encoder.Encode(checks)
 	return nil
 }
 
 type PostMessageEncoder struct {
-	message *PostMessage
+	message PostMessage
 }
 
-func NewPostMessageEncoder() *PostMessageEncoder {
-	return &PostMessageEncoder{new(PostMessage)}
-}
-
-// Encode converts a Check object into an Attachment object and
-// appends it to the end of the Attachments slice.
-func (c *PostMessageEncoder) Encode(check *Check) {
+// Encode converts a Checks object into a PostMessage object.
+func (c *PostMessageEncoder) Encode(checks Checks) {
+	c.message.Text = fmt.Sprintf("Consul catalog contains %d registered nodes", len(checks))
+	// Convert each Check object into an Attachment object.
 	colors := map[State]Color{
 		StateCritical: ColorDanger,
 		StatePassing:  ColorGood,
 		StateWarning:  ColorWarning,
 	}
-	fields := make(Fields, len(check.ServiceTags))
-	for i, tag := range check.ServiceTags {
-		fields[i] = &Field{Short: true, Title: "Service Tag", Value: tag}
+	for _, check := range checks {
+		fields := make(Fields, len(check.ServiceTags))
+		for i, tag := range check.ServiceTags {
+			fields[i] = &Field{Short: true, Title: "Service Tag", Value: tag}
+		}
+		c.message.Attachments.Add(&Attachment{
+			Color:  colors[check.Status],
+			Fields: fields,
+			Text:   check.Output,
+			Title:  check.Name,
+		})
 	}
-	c.message.Attachments.Add(&Attachment{
-		Color:  colors[check.Status],
-		Fields: fields,
-		Text:   check.Output,
-		Title:  check.Name,
-	})
 }
 
 // Product returns a PostMessage object.
-func (c *PostMessageEncoder) Product() Product {
+func (c *PostMessageEncoder) Product() PostMessage {
 	return c.message
 }

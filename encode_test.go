@@ -5,6 +5,25 @@ import (
 	"testing"
 )
 
+func TestBufferedReaderParseMalformed(t *testing.T) {
+	// Malformed JSON data.
+	buffer := bytes.NewBuffer([]byte(`
+		[
+			{
+				Node: c2409d674e5b
+			}
+		]
+	`))
+	var encoder PostMessageEncoder
+	reader, err := NewBufferedReader(buffer, &encoder)
+	if err != nil {
+		t.Error(err)
+	}
+	if err := reader.Parse(); err == nil {
+		t.Error("main: expected Parse method to return an error value")
+	}
+}
+
 func TestPostMessageEncoder(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte(`
 		[
@@ -36,31 +55,39 @@ func TestPostMessageEncoder(t *testing.T) {
 			}
 		]
 	`))
-	encoder := NewPostMessageEncoder()
-	reader, err := NewBufferedReader(buffer, encoder)
+	var encoder PostMessageEncoder
+	reader, err := NewBufferedReader(buffer, &encoder)
 	if err != nil {
 		t.Error(err)
 	}
 	if err := reader.Parse(); err != nil {
 		t.Error(err)
 	}
-	// Type assertion: https://tour.golang.org/methods/15
-	message := encoder.Product().(*PostMessage)
+	product := encoder.Product()
+
 	var actual, expected interface{}
-	actual, expected = len(message.Attachments), 2
+	actual, expected = len(product.Attachments), 2
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
-	actual, expected = len(message.Attachments[0].Fields), 1
+	actual, expected = len(product.Attachments[0].Fields), 1
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
-	actual, expected = message.Attachments[0].Color, ColorDanger
+	actual, expected = len(product.Attachments[1].Fields), 0
 	if expected != actual {
-		t.Errorf("main: expected %s, got %s instead", expected, actual)
+		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
-	actual, expected = message.Attachments[1].Color, ColorGood
+	actual, expected = product.Attachments[0].Color, ColorDanger
 	if expected != actual {
-		t.Errorf("main: expected %s, got %s instead", expected, actual)
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
+	}
+	actual, expected = product.Attachments[1].Color, ColorGood
+	if expected != actual {
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
+	}
+	actual, expected = product.Text, "Consul catalog contains 2 registered nodes"
+	if expected != actual {
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 }
