@@ -12,21 +12,21 @@ type Encoder interface {
 	Encode(checks Checks)
 }
 
-type BufferedReader struct {
+type bufferedReader struct {
 	buffer  []byte
 	encoder Encoder
 }
 
-func NewBufferedReader(reader io.Reader, encoder Encoder) (*BufferedReader, error) {
+func NewBufferedReader(reader io.Reader, encoder Encoder) (*bufferedReader, error) {
 	buffer := make([]byte, DefaultBufferSize)
 	n, err := reader.Read(buffer)
 	if err != nil {
 		return nil, err
 	}
-	return &BufferedReader{buffer[:n], encoder}, nil
+	return &bufferedReader{buffer[:n], encoder}, nil
 }
 
-func (r *BufferedReader) Parse() error {
+func (r *bufferedReader) Parse() error {
 	var checks Checks
 	if err := json.Unmarshal(r.buffer, &checks); err != nil {
 		return err
@@ -35,12 +35,21 @@ func (r *BufferedReader) Parse() error {
 	return nil
 }
 
-type PostMessageEncoder struct {
-	message PostMessage
+type postMessageEncoder struct {
+	message *PostMessage
+}
+
+// NewPostMessageEncoder returns a new postMessageEncoder given a
+// channel and a token.
+func NewPostMessageEncoder(channel, token string) *postMessageEncoder {
+	return &postMessageEncoder{&PostMessage{
+		Channel: channel,
+		Token:   token,
+	}}
 }
 
 // Encode converts a Checks object into a PostMessage object.
-func (c *PostMessageEncoder) Encode(checks Checks) {
+func (c *postMessageEncoder) Encode(checks Checks) {
 	c.message.Text = fmt.Sprintf("Consul catalog contains %d registered nodes", len(checks))
 	// Convert each Check object into an Attachment object.
 	colors := map[State]Color{
@@ -63,6 +72,6 @@ func (c *PostMessageEncoder) Encode(checks Checks) {
 }
 
 // Product returns a PostMessage object.
-func (c *PostMessageEncoder) Product() PostMessage {
+func (c *postMessageEncoder) Product() *PostMessage {
 	return c.message
 }
