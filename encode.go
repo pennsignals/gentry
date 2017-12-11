@@ -7,25 +7,25 @@ import (
 
 const DefaultBufferSize int = 4096
 
-type Converter interface {
-	Convert(check *Check)
+type Encoder interface {
+	Encode(check *Check)
 	Product() Product
 }
 
 type Product interface{}
 
 type BufferedReader struct {
-	bytes     []byte
-	converter Converter
+	bytes   []byte
+	encoder Encoder
 }
 
-func NewBufferedReader(reader io.Reader, converter Converter) (*BufferedReader, error) {
+func NewBufferedReader(reader io.Reader, encoder Encoder) (*BufferedReader, error) {
 	bytes := make([]byte, DefaultBufferSize)
 	n, err := reader.Read(bytes)
 	if err != nil {
 		return nil, err
 	}
-	return &BufferedReader{bytes[:n], converter}, nil
+	return &BufferedReader{bytes[:n], encoder}, nil
 }
 
 func (r *BufferedReader) Parse() error {
@@ -34,22 +34,22 @@ func (r *BufferedReader) Parse() error {
 		return err
 	}
 	for _, check := range checks {
-		r.converter.Convert(check)
+		r.encoder.Encode(check)
 	}
 	return nil
 }
 
-type PostMessageConverter struct {
+type PostMessageEncoder struct {
 	message *PostMessage
 }
 
-func NewPostMessageConverter() *PostMessageConverter {
-	return &PostMessageConverter{new(PostMessage)}
+func NewPostMessageEncoder() *PostMessageEncoder {
+	return &PostMessageEncoder{new(PostMessage)}
 }
 
-// Convert converts a Check object into an Attachment object and
+// Encode converts a Check object into an Attachment object and
 // appends it to the end of the Attachments slice.
-func (c *PostMessageConverter) Convert(check *Check) {
+func (c *PostMessageEncoder) Encode(check *Check) {
 	colors := map[State]Color{
 		StateCritical: ColorDanger,
 		StatePassing:  ColorGood,
@@ -68,6 +68,6 @@ func (c *PostMessageConverter) Convert(check *Check) {
 }
 
 // Product returns a PostMessage object.
-func (c *PostMessageConverter) Product() Product {
+func (c *PostMessageEncoder) Product() Product {
 	return c.message
 }

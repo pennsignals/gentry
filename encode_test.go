@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestTypePostMessageConversion(t *testing.T) {
+func TestPostMessageEncoder(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte(`
 		[
 			{
@@ -36,8 +36,8 @@ func TestTypePostMessageConversion(t *testing.T) {
 			}
 		]
 	`))
-	converter := NewPostMessageConverter()
-	reader, err := NewBufferedReader(buffer, converter)
+	encoder := NewPostMessageEncoder()
+	reader, err := NewBufferedReader(buffer, encoder)
 	if err != nil {
 		t.Error(err)
 	}
@@ -45,7 +45,7 @@ func TestTypePostMessageConversion(t *testing.T) {
 		t.Error(err)
 	}
 	// Type assertion: https://tour.golang.org/methods/15
-	message := converter.Product().(*PostMessage)
+	message := encoder.Product().(*PostMessage)
 	var actual, expected interface{}
 	actual, expected = len(message.Attachments), 2
 	if expected != actual {
