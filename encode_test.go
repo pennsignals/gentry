@@ -14,8 +14,8 @@ func TestBufferedReaderParseMalformed(t *testing.T) {
 			}
 		]
 	`))
-	var encoder PostMessageEncoder
-	reader, err := NewBufferedReader(buffer, &encoder)
+	encoder := NewPostMessageEncoder("general", "xoxb-")
+	reader, err := NewBufferedReader(buffer, encoder)
 	if err != nil {
 		t.Error(err)
 	}
@@ -55,8 +55,8 @@ func TestPostMessageEncoder(t *testing.T) {
 			}
 		]
 	`))
-	var encoder PostMessageEncoder
-	reader, err := NewBufferedReader(buffer, &encoder)
+	encoder := NewPostMessageEncoder("general", "xoxb-")
+	reader, err := NewBufferedReader(buffer, encoder)
 	if err != nil {
 		t.Error(err)
 	}
@@ -66,27 +66,38 @@ func TestPostMessageEncoder(t *testing.T) {
 	product := encoder.Product()
 
 	var actual, expected interface{}
+
 	actual, expected = len(product.Attachments), 2
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
+
 	actual, expected = len(product.Attachments[0].Fields), 1
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
+
 	actual, expected = len(product.Attachments[1].Fields), 0
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
+
 	actual, expected = product.Attachments[0].Color, ColorDanger
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
+
 	actual, expected = product.Attachments[1].Color, ColorGood
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
+
 	actual, expected = product.Text, "Consul catalog contains 2 registered nodes"
+	if expected != actual {
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
+	}
+
+	actual, expected = product.Channel, "general"
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
