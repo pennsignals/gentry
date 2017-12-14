@@ -20,12 +20,16 @@ type Attachment struct {
 
 type Attachments []*Attachment
 
+func (a *Attachments) Add(attachments ...*Attachment) {
+	*a = append(*a, attachments...)
+}
+
 type Color string
 
 const (
 	ColorDanger  Color = "danger"
-	ColorGood          = "good"
-	ColorWarning       = "warning"
+	ColorGood    Color = "good"
+	ColorWarning Color = "warning"
 )
 
 // String returns the literal text of the color.
@@ -39,4 +43,21 @@ type Field struct {
 	Value string `json:"value"`
 }
 
-type Fields []Field
+type Fields []*Field
+
+type PostMessage struct {
+	AsUser         bool        `json:"as_user"`
+	Attachments    Attachments `json:"attachments"`
+	Channel        string      `json:"channel"`
+	IconEmoji      string      `json:"icon_emoji"`
+	IconURL        string      `json:"icon_url"`
+	LinkNames      bool        `json:"link_names"`
+	Parse          string      `json:"parse"`
+	ReplyBroadcast bool        `json:"reply_broadcast"`
+	Text           string      `json:"text"`
+	ThreadTS       float32     `json:"thread_ts"`
+	Token          string      `json:"token"`
+	UnfurlLinks    bool        `json:"unfurl_links"`
+	UnfurlMedia    bool        `json:"unfurl_media"`
+	Username       string      `json:"username"`
+}

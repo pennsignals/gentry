@@ -1,4 +1,4 @@
-FROM golang
+FROM golang:alpine
 WORKDIR /go/src/gentry
 COPY . .
 RUN go-wrapper download
