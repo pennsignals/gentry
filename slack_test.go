@@ -18,6 +18,6 @@ func TestTypeAttachmentEncode(t *testing.T) {
 	}
 	actual, expected := message.Attachments[0].Color.String(), "danger"
 	if expected != actual {
-		t.Errorf("main: expected %s, got %s", expected, actual)
+		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 }
