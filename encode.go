@@ -17,6 +17,8 @@ type bufferedReader struct {
 	encoder Encoder
 }
 
+// NewBufferedReader returns a new bufferedReader given a reader and an
+// encoder.
 func NewBufferedReader(reader io.Reader, encoder Encoder) (*bufferedReader, error) {
 	buffer := make([]byte, DefaultBufferSize)
 	n, err := reader.Read(buffer)
@@ -26,6 +28,8 @@ func NewBufferedReader(reader io.Reader, encoder Encoder) (*bufferedReader, erro
 	return &bufferedReader{buffer[:n], encoder}, nil
 }
 
+// Parse decodes the contents of the buffer into a Checks object and
+// delegates the encoding of the Checks object to the encoder.
 func (r *bufferedReader) Parse() error {
 	var checks Checks
 	if err := json.Unmarshal(r.buffer, &checks); err != nil {
@@ -71,7 +75,7 @@ func (c *postMessageEncoder) Encode(checks Checks) {
 	}
 }
 
-// Product returns a PostMessage object.
-func (c *postMessageEncoder) Product() *PostMessage {
+// Message returns a PostMessage object.
+func (c *postMessageEncoder) Message() *PostMessage {
 	return c.message
 }

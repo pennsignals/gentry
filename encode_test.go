@@ -63,41 +63,41 @@ func TestPostMessageEncoder(t *testing.T) {
 	if err := reader.Parse(); err != nil {
 		t.Error(err)
 	}
-	product := encoder.Product()
+	message := encoder.Message()
 
 	var actual, expected interface{}
 
-	actual, expected = len(product.Attachments), 2
+	actual, expected = len(message.Attachments), 2
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
 
-	actual, expected = len(product.Attachments[0].Fields), 1
+	actual, expected = len(message.Attachments[0].Fields), 1
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
 
-	actual, expected = len(product.Attachments[1].Fields), 0
+	actual, expected = len(message.Attachments[1].Fields), 0
 	if expected != actual {
 		t.Errorf("main: expected %d, got %d instead", expected, actual)
 	}
 
-	actual, expected = product.Attachments[0].Color, ColorDanger
+	actual, expected = message.Attachments[0].Color, ColorDanger
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 
-	actual, expected = product.Attachments[1].Color, ColorGood
+	actual, expected = message.Attachments[1].Color, ColorGood
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 
-	actual, expected = product.Text, "Consul catalog contains 2 registered nodes"
+	actual, expected = message.Text, "Consul catalog contains 2 registered nodes"
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
 
-	actual, expected = product.Channel, "general"
+	actual, expected = message.Channel, "general"
 	if expected != actual {
 		t.Errorf("main: expected %q, got %q instead", expected, actual)
 	}
