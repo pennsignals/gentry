@@ -8,24 +8,24 @@ import (
 	"net/url"
 )
 
-type Creator interface {
+type RequestFactory interface {
 	Create() *http.Request
 }
 
-type PostMessageCreator struct {
+type PostMessageRequestFactory struct {
 	address *url.URL
 	message *PostMessage
 }
 
-func NewPostMessageCreator(address string, message *PostMessage) (*PostMessageCreator, error) {
+func NewPostMessageRequestFactory(address string, message *PostMessage) (*PostMessageRequestFactory, error) {
 	identifier, err := url.Parse(address)
 	if err != nil {
 		return nil, err
 	}
-	return &PostMessageCreator{identifier, message}, nil
+	return &PostMessageRequestFactory{identifier, message}, nil
 }
 
-func (c *PostMessageCreator) Create() *http.Request {
+func (c *PostMessageRequestFactory) Create() *http.Request {
 	body, _ := json.Marshal(c.message)
 	request, _ := http.NewRequest(http.MethodPost, c.address.String(), bytes.NewReader(body))
 	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.message.Token))
@@ -35,15 +35,15 @@ func (c *PostMessageCreator) Create() *http.Request {
 
 type Requester struct {
 	client  *http.Client
-	creator Creator
+	factory RequestFactory
 }
 
-func NewRequester(creator Creator, options ...func(client *http.Client)) *Requester {
+func NewRequester(factory RequestFactory, options ...func(client *http.Client)) *Requester {
 	var client http.Client
 	for _, option := range options {
 		option(&client)
 	}
-	return &Requester{&client, creator}
+	return &Requester{&client, factory}
 }
 
 func (r *Requester) Client() *http.Client {
@@ -51,7 +51,7 @@ func (r *Requester) Client() *http.Client {
 }
 
 func (r *Requester) Request() (*http.Response, error) {
-	request := r.creator.Create()
+	request := r.factory.Create()
 	response, err := r.client.Do(request)
 	if err != nil {
 		return nil, err
