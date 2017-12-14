@@ -13,10 +13,7 @@ type MockRoundTripper struct {
 }
 
 func NewMockRoundTripper() *MockRoundTripper {
-	var recorder httptest.ResponseRecorder
-	recorder.HeaderMap = make(http.Header)
-	recorder.HeaderMap.Set("Content-Type", "application/json")
-	return &MockRoundTripper{&recorder}
+	return &MockRoundTripper{new(httptest.ResponseRecorder)}
 }
 
 func (rt *MockRoundTripper) Recorder() *httptest.ResponseRecorder {
@@ -24,6 +21,8 @@ func (rt *MockRoundTripper) Recorder() *httptest.ResponseRecorder {
 }
 
 func (rt *MockRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
+	rt.recorder.HeaderMap = make(http.Header)
+	rt.recorder.HeaderMap.Set("Content-Type", "application/json")
 	io.WriteString(rt.recorder, `
 		{
 			"ok": false,
