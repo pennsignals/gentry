@@ -27,11 +27,11 @@ func main() {
 		log.Fatal(err)
 	}
 	message := encoder.Message()
-	factory, err := NewPostMessageRequestFactory(address, message)
+	creator, err := NewPostMessageRequestCreator(address, message)
 	if err != nil {
 		log.Fatal(err)
 	}
-	requester := NewRequester(factory)
+	requester := NewRequester(creator)
 	if _, err := requester.Request(); err != nil {
 		log.Println(err)
 	}

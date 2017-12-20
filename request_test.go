@@ -16,20 +16,20 @@ func NewMockRoundTripper() *MockRoundTripper {
 	return &MockRoundTripper{new(httptest.ResponseRecorder)}
 }
 
-func (rt *MockRoundTripper) Recorder() *httptest.ResponseRecorder {
-	return rt.recorder
+func (t *MockRoundTripper) Recorder() *httptest.ResponseRecorder {
+	return t.recorder
 }
 
-func (rt *MockRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
-	rt.recorder.HeaderMap = make(http.Header)
-	rt.recorder.HeaderMap.Set("Content-Type", "application/json")
-	io.WriteString(rt.recorder, `
+func (t *MockRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
+	t.recorder.HeaderMap = make(http.Header)
+	t.recorder.HeaderMap.Set("Content-Type", "application/json")
+	io.WriteString(t.recorder, `
 		{
 			"ok": false,
 			"error": "not_authed"
 		}
 	`)
-	return rt.recorder.Result(), nil
+	return t.recorder.Result(), nil
 }
 
 func TestNewRequesterClientConfiguration(t *testing.T) {
@@ -44,7 +44,7 @@ func TestNewRequesterClientConfiguration(t *testing.T) {
 }
 
 func TestPostMessageCreator(t *testing.T) {
-	creator, err := NewPostMessageRequestFactory("", &PostMessage{Token: "xoxb-"})
+	creator, err := NewPostMessageRequestCreator("", &PostMessage{Token: "xoxb-"})
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,14 +63,14 @@ func TestPostMessageCreator(t *testing.T) {
 }
 
 func TestPostMessageCreatorMalformedAddress(t *testing.T) {
-	if _, err := NewPostMessageRequestFactory(":", nil); err == nil {
-		t.Errorf("main: expected NewPostMessageRequestFactory to return an error value")
+	if _, err := NewPostMessageRequestCreator(":", nil); err == nil {
+		t.Errorf("main: expected NewPostMessageRequestCreator to return an error value")
 	}
 }
 
 func TestRequesterMockRequest(t *testing.T) {
 	address := "https://slack.com/api/api.test"
-	creator, err := NewPostMessageRequestFactory(address, new(PostMessage))
+	creator, err := NewPostMessageRequestCreator(address, new(PostMessage))
 	if err != nil {
 		t.Error(err)
 	}
