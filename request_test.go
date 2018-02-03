@@ -44,7 +44,7 @@ func TestNewRequesterClientConfiguration(t *testing.T) {
 }
 
 func TestPostMessageCreator(t *testing.T) {
-	creator, err := NewPostMessageRequestCreator("", &PostMessage{Token: "xoxb-"})
+	creator, err := NewPostMessageRequestCreator(&PostMessage{Token: "xoxb-"})
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,15 +62,8 @@ func TestPostMessageCreator(t *testing.T) {
 	}
 }
 
-func TestPostMessageCreatorMalformedAddress(t *testing.T) {
-	if _, err := NewPostMessageRequestCreator(":", nil); err == nil {
-		t.Errorf("main: expected NewPostMessageRequestCreator to return an error value")
-	}
-}
-
 func TestRequesterMockRequest(t *testing.T) {
-	address := "https://slack.com/api/api.test"
-	creator, err := NewPostMessageRequestCreator(address, new(PostMessage))
+	creator, err := NewPostMessageRequestCreator(new(PostMessage))
 	if err != nil {
 		t.Error(err)
 	}

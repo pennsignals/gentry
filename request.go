@@ -17,8 +17,8 @@ type PostMessageRequestCreator struct {
 	message *PostMessage
 }
 
-func NewPostMessageRequestCreator(address string, message *PostMessage) (*PostMessageRequestCreator, error) {
-	identifier, err := url.Parse(address)
+func NewPostMessageRequestCreator(message *PostMessage) (*PostMessageRequestCreator, error) {
+	identifier, err := url.Parse("https://slack.com/api/chat.postMessage")
 	if err != nil {
 		return nil, err
 	}

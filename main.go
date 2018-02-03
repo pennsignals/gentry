@@ -8,10 +8,9 @@ import (
 
 const DefaultChannel string = "general"
 
-var address, channel, token string
+var channel, token string
 
 func init() {
-	flag.StringVar(&address, "address", "", "")
 	flag.StringVar(&channel, "channel", DefaultChannel, "")
 	flag.StringVar(&token, "token", "", "")
 }
@@ -27,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 	message := encoder.Message()
-	creator, err := NewPostMessageRequestCreator(address, message)
+	creator, err := NewPostMessageRequestCreator(message)
 	if err != nil {
 		log.Fatal(err)
 	}
